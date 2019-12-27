@@ -3,6 +3,7 @@
 #include "game.h"
 #include "graphics.h"
 #include "input.h"
+#include "player.h"
 #include  <algorithm>
 
 /* Game class
@@ -27,9 +28,7 @@ void Game::gameLoop() {
 	Input input;
 	SDL_Event event;
 
-	this->_player = AnimatedSprite(graphics, "Sprites/MyChar.png", 0, 0, 16, 16, 100, 100, 100);
-	this->_player.setupAnimations();
-	this->_player.playAnimation("RunRight");
+	this->_player = Player(graphics, 100, 100);
 
 	int LAST_UPDATE_TIME = SDL_GetTicks();
 	//Start the game loop
@@ -49,6 +48,21 @@ void Game::gameLoop() {
 		}
 		if (input.wasKeyPressed(SDL_SCANCODE_ESCAPE) == true) {
 			return;
+		} else if (input.isKeyHeld(SDL_SCANCODE_LEFT) == true) {
+			this->_player.moveLeft();
+		} else if (input.isKeyHeld(SDL_SCANCODE_RIGHT) == true) {
+			this->_player.moveRight();
+		} else if (input.isKeyHeld(SDL_SCANCODE_UP) == true) {
+			this->_player.moveUp();
+		} else if (input.isKeyHeld(SDL_SCANCODE_DOWN) == true) {
+			this->_player.moveDown();
+		} else if (input.isKeyHeld(SDL_SCANCODE_SPACE) == true) {
+			printf("Space!");
+			this->_player.action();
+		}
+
+		if (!input.isKeyHeld(SDL_SCANCODE_LEFT) && !input.isKeyHeld(SDL_SCANCODE_RIGHT) && !input.isKeyHeld(SDL_SCANCODE_UP) && !input.isKeyHeld(SDL_SCANCODE_DOWN)) {
+			this->_player.stopMoving();
 		}
 
 		const int CURRENT_TIME_MS = SDL_GetTicks();
@@ -62,9 +76,7 @@ void Game::gameLoop() {
 
 void Game::draw(Graphics& graphics) {
 	graphics.clear();
-
-	this->_player.draw(graphics, 100, 100);
-
+	this->_player.draw(graphics);
 	graphics.flip();
 }
 
